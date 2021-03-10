@@ -1,0 +1,14 @@
+
+.LoginBlock{
+    margin: 20px;
+}
+
+.LoginBlock input{
+   margin: 5px auto;
+   display: block;
+
+}
+
+.LoginBlock p{
+text-align: center;
+}

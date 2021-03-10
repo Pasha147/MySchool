@@ -1,0 +1,22 @@
+
+/* -----Create user Form----------- */
+.CreateUserForm{
+display: flex;
+flex-direction: column;
+align-items: center;
+/* width: 90%; */
+}
+.CreateUserForm input, select {
+    margin: 4px;
+    width: 90%;
+}
+.CreateUserForm div{
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    width: 90%;
+} 
+.CreateUserForm div input{
+    width: 20%;
+}
+/* ------------------------------------- */

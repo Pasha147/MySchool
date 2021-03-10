@@ -1,0 +1,36 @@
+
+.ListOfUsers {
+margin-top: 10px;
+margin-bottom: 10px;
+margin-left: 10px;
+}
+.ListOfUsers span{
+   
+    border: solid 1px darkblue;
+    display: inline-block;
+    text-align: center
+}
+
+
+.SpanNum{
+    width: 7%;
+}
+
+.SpanPosition{
+    width: 14%;
+}
+.SpanEmail{
+    width: 35%;
+}
+.SpanName{
+    width: 36%;
+}
+
+.ListOfUsers div{
+    margin-left: 10px;
+}
+
+.UsersButton{
+    display: flex;
+    justify-content: center;
+}

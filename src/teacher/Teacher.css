@@ -1,0 +1,72 @@
+.TeacherGrit{
+    margin-block-start: 0;
+    margin-block-end: 0;
+    background-image: linear-gradient(to right, #d4fc79 0%, #f68084 100%);
+    text-align: center;
+    height: 7%;
+}
+
+
+.Lessons h4{
+    margin-block-start: 0px;
+}
+
+
+.mainTeacher{
+    height: 100%;
+    /* border: solid rgb(105, 199, 243) 2px;
+    box-sizing: border-box; */
+}
+ 
+.Teacher{
+    display: flex;
+    height: 93%;
+}
+
+li{
+    text-align:left;
+    color: darkslategray;
+    font-weight: 100;
+    text-shadow: 0px 0px 1px rgba(0, 0, 0, 0.363);
+    font-size: 24px;
+
+}
+
+p{
+    margin-block-start: 0px;
+    margin-block-end: 0px;
+    text-align: center;
+    color: darkslategray;
+    font-weight: 100;
+    text-shadow: 0px 0px 1px rgba(0, 0, 0, 0.363);
+    font-size: 24px;
+}
+
+.Lessons { 
+   
+    background: #C7E3E4; 
+    width: 33%; 
+    border: slategrey solid 2px;
+    margin: 0px 5px 0px 0px;
+    border-radius: 8px;
+}
+.Forms { 
+    
+    background: #E0D2C7; 
+    width: 44%;
+    border: slategrey solid 2px;
+    border-radius: 8px;
+}
+.Buttons { 
+   
+    background: #ECD5DE; 
+    right: 0; 
+    width: 23%;
+    border: slategrey solid 2px;
+    margin: 0px 0px 0px 5px;
+    border-radius: 8px;
+} 
+.CreateStudent{
+    width: 90%;
+    margin: 5px 5%;
+}
