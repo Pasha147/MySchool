@@ -16,7 +16,7 @@ class Director extends Component {
             createUserAlert: '', // сообщение при создании юзера
         }
 
-        this.curUser=this.props.curUser
+        this.curUser = this.props.curUser
     }
 
     // static getDerivedStateFromProps(props, state) {
@@ -42,6 +42,10 @@ class Director extends Component {
 
     clickCencelButton = () => {
         this.setState({ curForm: '' })
+    }
+
+    Exit = () => {
+        window.location = '/'
     }
 
     render() {
@@ -74,11 +78,17 @@ class Director extends Component {
                             onClick={this.clickButton}
                             className="CreateUserButt"
                             id='CreateUserButt'
-                        >Create users</button>
+                        >
+                            Create users
+                        </button>
                         <button
                             id='UsersButt'
                             onClick={this.clickButton}
                             className="Users">Users</button>
+                        <button
+                            id='ExitButt'
+                            onClick={this.Exit}
+                            className="DirExit">Leaving your account</button>
                     </div>
                 </div>
             </div>

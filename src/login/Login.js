@@ -43,7 +43,7 @@ class Login extends Component {
 
         try {
             //Authorisation-----------------------
-           let response = await firebase.auth().signInWithEmailAndPassword(email, password)
+            await firebase.auth().signInWithEmailAndPassword(email, password)
             //--------------------------------------------
 
             let db = firebase.firestore()

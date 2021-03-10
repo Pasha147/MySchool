@@ -10,6 +10,8 @@ class UsersForm extends Component {
         super(props)
         this.state = {
             run: false,
+            usersList: [],
+
         }
         this.users = [] //вся база
         // this.users1 = [] //только имеилы
@@ -53,7 +55,14 @@ class UsersForm extends Component {
             })
         } catch (error) { alert(error) }
         //console.log(this.users)
-
+        let usersList = []
+        this.users.forEach((user, index) => {
+            usersList[index] = {
+                email: user.email,
+                check: false,
+            }
+        })
+        this.setState({ usersList: usersList })
 
         this.setState({ run: true })
     }
@@ -71,11 +80,15 @@ class UsersForm extends Component {
     changeCheck = ({ target: { value, checked } }) => {
         let tUser = this.users[Number(value)]
         tUser.checked = checked
+        let usersList = [...this.state.usersList]
+        usersList[Number(value)].check = checked
+        this.setState({ usersList: usersList })
+
     }
 
     clickDeliteButton = async () => {
 
-        // console.log(delUsers)
+        
         if (!firebase.apps.length) {
             firebase.initializeApp(this.firebaseConfig);
         }
@@ -91,26 +104,23 @@ class UsersForm extends Component {
             try {
                 let delUserEmail = item.email
                 let delUserPass = item.password
-                console.log('delUser ', delUserEmail, delUserPass)
-
+               // console.log('delUser ', delUserEmail, delUserPass)
 
                 let db = firebase.firestore()
                 await db.collection("users").doc(delUserEmail).delete()
-                console.log('del data')
-
-
+               // console.log('del data')
 
                 await firebase.auth().signInWithEmailAndPassword(delUserEmail, delUserPass)
                 let user = firebase.auth().currentUser;
-                console.log('del start', index, delUserLengh)
+               // console.log('del start', index, delUserLengh)
                 await user.delete()
-                console.log('del finish')
+               // console.log('del finish')
                 if (index === (delUserLengh - 1)) {
                     let dirEmail = this.props.curUser.email
                     let dirPass = this.props.curUser.password
                     await firebase.auth().signInWithEmailAndPassword(dirEmail, dirPass)
-                    let user = firebase.auth().currentUser;
-                    console.log('dir', user.email)
+                   // let user = firebase.auth().currentUser;
+               //     console.log('dir', user.email)
 
                     this.users = []
                     this.createUsers()
@@ -128,7 +138,7 @@ class UsersForm extends Component {
 
 
     render() {
-
+         //console.log('ddd',this.state.usersList)
 
         return (
             <div>
@@ -141,7 +151,7 @@ class UsersForm extends Component {
                             type="checkbox"
                             id={`check`}
                             key={`check`}
-                            onChange={this.changeCheck}
+                            // onChange={this.changeCheck}
                         />
                         <span
                             id={`spanNum`}
@@ -169,13 +179,16 @@ class UsersForm extends Component {
                         </span>
                     </div>
 
-                    {this.users.map((user, i) => (
-                        <div>
+                    {this.users.map((user, index) =>{ 
+                        let i=index.toString()
+                        return (
+                        <div key={`div${i}`} >
                             <input
                                 type="checkbox"
                                 name="acheckbox"
                                 value={`${i}`}
-                               
+                                checked={this.state.usersList[i].check}
+
                                 id={`idcheck${i}`}
                                 key={`check${i}`}
 
@@ -185,7 +198,7 @@ class UsersForm extends Component {
                                 id={`spanNum${i}`}
                                 key={`spanNum${i}`}
                                 className='SpanNum'>
-                                {i + 1}
+                                {index+1 }
                             </span>
 
                             <span
@@ -209,7 +222,7 @@ class UsersForm extends Component {
                                 {user.name}
                             </span>
                         </div>
-                    ))}
+                    )})}
 
                 </div>
                 <div className='UsersButton'>

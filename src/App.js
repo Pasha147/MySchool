@@ -46,7 +46,7 @@ class App extends Component {
 
     let { mainNav } = this.state
     let { curUserName } = this.state
-  
+
 
     return (
       <Fragment>
@@ -55,11 +55,18 @@ class App extends Component {
           <main className='Main'>
             <Switch>
               <Route exact path='/' component={Home} />
-              <Route path='/login/'
-                render={() => (<Login changeUser={this.changeUser} />)}
-              />
+              <Route path='/login/' render={() => (<Login changeUser={this.changeUser} />)} />
               <Route path='/teacher/'
-                render={() => (<Teacher curUser={this.globalState.curUser} />)}
+                render={() => {
+                  if (this.globalState.curUser.position === 'teacher') {
+                    return (<Teacher
+                      curUser={this.globalState.curUser}
+                      changeUser={this.changeUser}
+                    />)
+                  } else {
+                    return (<Login changeUser={this.changeUser} />)
+                  }
+                }}
               />
 
               <Route path='/student/'
@@ -67,7 +74,13 @@ class App extends Component {
               />
 
               <Route path='/director/'
-                render={() => (<Director curUser={this.globalState.curUser} />)}
+                render={() => {
+                  if (this.globalState.curUser.position === 'director') {
+                    return (<Director curUser={this.globalState.curUser} />)
+                  } else {
+                    return ((<Login changeUser={this.changeUser} />))
+                  }
+                }}
               />
 
               <Route path='/contacts' component={Contacts} />
