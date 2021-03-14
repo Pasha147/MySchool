@@ -12,12 +12,11 @@ class CurStudent extends Component {
             lessonsList: [],
             lessonsList1: [],
             payList: [],
-
         }
         if (this.props.selectedStudent.lessons) {
             this.props.selectedStudent.lessons.forEach((lesson) => {
                 this.state.lessonsList1.push({
-                    date: lesson.date,
+                    date: lesson,
                     checked: false,
                 })
             })
@@ -33,8 +32,7 @@ class CurStudent extends Component {
                 })
 
             })
-            this.calc = this.calc(this.state.payList)
-
+            this.calca = this.calc(this.state.payList)
         }
 
     }
@@ -84,7 +82,7 @@ class CurStudent extends Component {
     };
 
     componentDidMount() {
-        //console.log(this.props)
+
     }
 
     handleChange = ({ target: { value, id } }) => {
@@ -96,110 +94,79 @@ class CurStudent extends Component {
     clickAddLessonButton = async () => {
         let newLessons = []
         if (this.props.selectedStudent.lessons) {
-            newLessons = [...this.props.selectedStudent.lessons]
+            this.state.lessonsList1.forEach(lesson => {
+                newLessons.push(lesson.date)
+            })
         }
-        newLessons.push({ date: this.state.addDateLesson })
+        newLessons.push(this.state.addDateLesson)
+
         let lessonsList1 = [...this.state.lessonsList1]
         lessonsList1.push({
             date: this.state.addDateLesson,
             checked: false,
         })
+
         let studEmail = this.props.selectedStudent.email
-
-        if (!firebase.apps.length) {
-            firebase.initializeApp(this.firebaseConfig);
-        }
-        //-------считывает профиль текущего студента ------
-        let curUser = {}
+        //-------------------обновляем список уроков в базе---------------------------
+        if (!firebase.apps.length) { firebase.initializeApp(this.firebaseConfig); }
         try {
-
             let db = firebase.firestore()
             let docRef = db.collection('users').doc(studEmail)
-            let doc = await docRef.get()
-            curUser = doc.data()
+            await docRef.update({ lessons: newLessons })
         } catch (error) { alert(error) }
-
-        curUser.lessons = newLessons
-
-        //-------записывает профиль текущего студента ------
-        try {
-
-            let db = firebase.firestore()
-            let docRef = db.collection('users').doc(studEmail)
-            await docRef.set(curUser)
-
-        } catch (error) { alert(error) }
-
-        //-----------------------------------------------------------
+        //------------------------------------------------------------------------------------
 
         this.setState({ lessonsList1 })
-        console.log(curUser,)
     }
 
     changeCheckLessons = ({ target: { value, checked } }) => {
         let lessonsList = [...this.state.lessonsList1]
         lessonsList[Number(value)].checked = checked
         this.setState({ lessonsList1: lessonsList })
-
     }
 
     changeCheckPayments = ({ target: { value, checked } }) => {
         let paymentsList = [...this.state.payList]
         paymentsList[Number(value)].checked = checked
         this.setState({ payList: paymentsList })
-        console.log(this.calc)
 
-        let payLessons = this.calc[value].lessonList
+        let payLessons = this.calca[value].lessonList
         let lessonsList1 = [...this.state.lessonsList1]
         payLessons.forEach((n) => {
-            if (lessonsList1.length>=n){
-            lessonsList1[n-1].checked = checked
+            if (lessonsList1.length >= n) {
+                lessonsList1[n - 1].checked = checked
             }
         })
         this.setState({ lessonsList1 })
     }
 
     clickDeleteLessonButton = async () => {
-        // let dellLessons = this.state.lessonsList1.filter(lesson => lesson.checked)
         let newLessons = []
         let lessonsList1 = []
 
         this.state.lessonsList1.forEach((lesson, index) => {
             if (!lesson.checked) {
-                newLessons.push(this.props.selectedStudent.lessons[index])
-                lessonsList1.push(this.state.lessonsList1[index])
+                newLessons.push(lesson.date)
+                lessonsList1.push(lesson)
             }
         })
 
         let studEmail = this.props.selectedStudent.email
-        if (!firebase.apps.length) {
-            firebase.initializeApp(this.firebaseConfig);
-        }
-        // -------считывает профиль текущего студента ------
-        let curUser = {}
-        try {
 
+        //-------------------обновляем список уроков в базе---------------------------
+        if (!firebase.apps.length) { firebase.initializeApp(this.firebaseConfig); }
+        try {
             let db = firebase.firestore()
             let docRef = db.collection('users').doc(studEmail)
-            let doc = await docRef.get()
-            curUser = doc.data()
+            await docRef.update({ lessons: newLessons })
         } catch (error) { alert(error) }
-        curUser.lessons = newLessons
-        console.log(curUser)
-
-        //-------записывает профиль текущего студента ------
-        try {
-
-            let db = firebase.firestore()
-            let docRef = db.collection('users').doc(studEmail)
-            await docRef.set(curUser)
-
-        } catch (error) { alert(error) }
+        //------------------------------------------------------------------------------------
 
         this.setState({ lessonsList1 })
     }
 
     changeForm = () => {
+        this.props.updateCurStud(this.props.selectedStudent.email)
         this.props.changeForm('myStudentsForm')
     }
 
@@ -208,38 +175,20 @@ class CurStudent extends Component {
             date: this.state.addDatePayment,
             payment: this.state.addPayment
         }
-
-        let studEmail = this.props.selectedStudent.email
-
-        if (!firebase.apps.length) {
-            firebase.initializeApp(this.firebaseConfig);
-        }
-        //-------считывает профиль текущего студента ------
-        let curUser = {}
-        try {
-
-            let db = firebase.firestore()
-            let docRef = db.collection('users').doc(studEmail)
-            let doc = await docRef.get()
-            curUser = doc.data()
-        } catch (error) { alert(error) }
-
-        curUser.payments.push(addPay)
-
         addPay.checked = false
         let newPayList = [...this.state.payList, addPay]
         this.setState({ payList: newPayList })
-       // this.calc = this.calc(newPayList)
+        this.calca = this.calc(newPayList)
+        let studEmail = this.props.selectedStudent.email
 
-        //-------записывает профиль текущего студента ------
+        //-------------------обновляем список проплат в базе---------------------------
+        if (!firebase.apps.length) { firebase.initializeApp(this.firebaseConfig); }
         try {
-
             let db = firebase.firestore()
             let docRef = db.collection('users').doc(studEmail)
-            await docRef.set(curUser)
-
+            await docRef.update({ payments: newPayList })
         } catch (error) { alert(error) }
-
+        //------------------------------------------------------------------------------------
     }
 
     clickDeletePaymentButton = async () => {
@@ -248,9 +197,7 @@ class CurStudent extends Component {
 
         this.state.payList.forEach((payment, index) => {
             if (!payment.checked) {
-
                 newPayList.push(payment)
-
                 newPayments.push({
                     date: payment.date,
                     payment: payment.payment,
@@ -260,31 +207,17 @@ class CurStudent extends Component {
 
         let studEmail = this.props.selectedStudent.email
 
-        if (!firebase.apps.length) {
-            firebase.initializeApp(this.firebaseConfig);
-        }
-        //-------считывает профиль текущего студента ------
-        let curUser = {}
+        //-------------------обновляем список проплат в базе---------------------------
+        if (!firebase.apps.length) { firebase.initializeApp(this.firebaseConfig); }
         try {
-
             let db = firebase.firestore()
             let docRef = db.collection('users').doc(studEmail)
-            let doc = await docRef.get()
-            curUser = doc.data()
+            await docRef.update({ payments: newPayments })
         } catch (error) { alert(error) }
+        //------------------------------------------------------------------------------------
 
-        curUser.payments = newPayments
-
-        //-------записывает профиль текущего студента ------
-        try {
-
-            let db = firebase.firestore()
-            let docRef = db.collection('users').doc(studEmail)
-            await docRef.set(curUser)
-
-        } catch (error) { alert(error) }
+        this.calca = this.calc(newPayList)
         this.setState({ payList: newPayList })
-        //this.calc = this.calc(newPayList)
     }
 
     lessonsList = () => {
@@ -390,6 +323,7 @@ class CurStudent extends Component {
 
                 </div>
                 <button onClick={this.changeForm}>Go back</button>
+
 
 
             </div>

@@ -59,7 +59,7 @@ class MyStudentsForm extends Component {
                 this.students.push(tUser)
             })
         } catch (error) { alert(error) }
-        //console.log(this.users)
+        // console.log(this.students)
         let studentsList = []
 
         let myStudents = [...this.props.curUser.myStudents]
@@ -137,9 +137,25 @@ class MyStudentsForm extends Component {
 
     }
 
-    changeForm = (formType)=>{
+    updateCurStud = async (email) => {
+        if (!firebase.apps.length) { firebase.initializeApp(this.firebaseConfig); }
+        //-------считывает профиль текущего ученика ------
+        let curUser = {}
+        try {
+            let db = firebase.firestore()
+            let docRef = db.collection('users').doc(email)
+            let doc = await docRef.get()
+            curUser = doc.data()
+        } catch (error) { alert(error) }
+        let index = this.students.findIndex(student => student.email = email)
+
+        this.students[index] = curUser
+
+    }
+
+    changeForm = (formType) => {
         this.createStudentsList()
-        this.setState({formType}) 
+        this.setState({ formType })
     }
 
     render() {
@@ -147,9 +163,12 @@ class MyStudentsForm extends Component {
         if (this.state.formType === 'viewForm') {
             return (
                 <div>
-                    <CurStudent 
-                    changeForm = {this.changeForm} 
-                    selectedStudent={this.selectedStudent} />
+                    <CurStudent
+                        changeForm={this.changeForm}
+                        selectedStudent={this.selectedStudent}
+                        updateCurStud= {this.updateCurStud}
+
+                    />
                 </div>
 
             )

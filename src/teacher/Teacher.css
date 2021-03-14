@@ -67,6 +67,7 @@ p{
     
     background: #E0D2C7; 
     width: 44%;
+    overflow-y: auto;
    
 }
 .TeacherButtons { 

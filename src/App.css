@@ -4,7 +4,7 @@
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-rows: 130px 1fr 80px;
+  grid-template-rows: 130px 1fr 40px;
   grid-template-columns: 200px 1fr 300px;
 
   
@@ -16,7 +16,7 @@
 }
 
 main{
-  height: 80vh;
+  height: 83vh;
   grid-column: 1/3;
   background-image: linear-gradient(120deg , #84fab0 0%, #8fd3f4 100%);
   padding: 0px 6px;
