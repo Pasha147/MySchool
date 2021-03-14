@@ -1,0 +1,57 @@
+
+.CurStudTables{
+    border: solid cornflowerblue 1px;
+    display: flex;
+    justify-content: space-around;
+    width: 98%;
+    margin: 0px auto;
+}
+.CurStudLessons
+{
+    width: 35%;
+    border: solid crimson 1px;
+}
+
+.CurStudPayments{
+    width: 63%;
+    border: solid crimson 1px;
+}
+
+.ListOfLessonsHead span{
+   
+    border: solid 1px darkblue;
+    display: inline-block;
+    text-align: center
+}
+
+.NumOfLessonsHead{
+    
+    width: 24%;
+}
+
+.DateOfLessonsHead{
+   
+    width: 63%;
+}
+
+.NumOfPaymentsHead{
+    
+    width: 17%;
+}
+
+.DateOfPaymentsHead{
+   
+    width: 38%;
+}
+.PayOfPaymentsHead{
+   
+    width: 38%;
+}
+
+.ListOfLessons li{
+    list-style: none;
+    font-size: 18px;
+}
+.ListOfLessons span{
+    margin-left: 15px;
+}

@@ -57,7 +57,6 @@ class CreateStudentForm extends Component {
             })
         } catch (error) { alert(error) }
         //console.log(this.users)
-        let studentsList = []
         let studentNotExist = []
         let myStudents = [...this.props.curUser.myStudents]
         this.students.forEach((student, index) => {
@@ -86,7 +85,7 @@ class CreateStudentForm extends Component {
     clickAddButton = async () => {
         let addStudents = this.state.studentsList.filter(student => student.check)
         let newMyStudents = [...this.props.curUser.myStudents]
-        addStudents.filter((student) => {
+        addStudents.forEach((student) => {
             newMyStudents.push(student.email)
         })
         this.curUser.myStudents = newMyStudents

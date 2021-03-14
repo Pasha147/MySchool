@@ -4,6 +4,7 @@ import firebase from "firebase/app";
 import "firebase/firestore";
 import "firebase/auth"
 
+import CurStudent from './CurStudent'
 
 class MyStudentsForm extends Component {
 
@@ -12,9 +13,11 @@ class MyStudentsForm extends Component {
         this.state = {
             studentsList: [],
             massage: '',
+            formType: 'myStudentsForm'
         }
         this.students = []
         this.curUser = {}
+        this.selectedStudent = 0
     }
 
 
@@ -116,139 +119,145 @@ class MyStudentsForm extends Component {
                 studentExist.push(student)
             }
         })
-        this.setState({ studentsList: studentExist,
+        this.setState({
+            studentsList: studentExist,
             massage: 'удалено из моих учеников'
         })
 
-        // let newMyStudents = [...this.props.curUser.myStudents]
-        // addStudents.filter((student) => {
-        //     newMyStudents.push(student.email)
-        // })
-        // this.curUser.myStudents = newMyStudents
 
-        // //-------записывает профиль текущего учителя ------
-        // try {
-        //     let teacherEmail = this.props.curUser.email
-        //     let db = firebase.firestore()
-        //     let docRef = db.collection('users').doc(teacherEmail)
-        //     await docRef.set(this.curUser)
+    }
 
-        // } catch (error) { alert(error) }
-        // this.props.changeUser(this.curUser)
-        // //-----------------------------------------------------------
+    clickViewButton = () => {
+        let selectedStudent = 0
+        selectedStudent = this.state.studentsList.find(student => student.check)
+        if (selectedStudent) {
+            this.setState({ formType: 'viewForm' })
+            this.selectedStudent = selectedStudent
+        }
 
-        // let studentNotExist = []
-        // let myStudents = [...this.curUser.myStudents]
-        // this.students.forEach((student, index) => {
-        //     if (!myStudents.includes(student.email)) {
-        //         student.check = false
-        //         studentNotExist.push(student)
-        //     }
-        // })
-        // this.setState({ studentsList: studentNotExist,
-        // massage:'добавлено в мои ученики' })
+    }
 
+    changeForm = (formType)=>{
+        this.createStudentsList()
+        this.setState({formType}) 
     }
 
     render() {
 
-        return (
-            <div>
-                <div className='ListOfStudents'>
-                    <p>My students</p>
+        if (this.state.formType === 'viewForm') {
+            return (
+                <div>
+                    <CurStudent 
+                    changeForm = {this.changeForm} 
+                    selectedStudent={this.selectedStudent} />
+                </div>
 
-                    <div className='ListOfStudentsHead'>
-                        <input
-                            type="checkbox"
-                            id={`check`}
-                            key={`check`}
-                        // onChange={this.changeCheck}
-                        />
-                        <span
-                            id={`spanNum`}
-                            key={`spanNum`}
-                            className='SpanNum'>
-                            N
+            )
+        }
+        if (this.state.formType === 'myStudentsForm') {
+            return (
+                <div>
+                    <div className='ListOfStudents'>
+                        <p>My students</p>
+
+                        <div className='ListOfStudentsHead'>
+                            <input
+                                type="checkbox"
+                                id={`check`}
+                                key={`check`}
+                            // onChange={this.changeCheck}
+                            />
+                            <span
+                                id={`spanNum`}
+                                key={`spanNum`}
+                                className='SpanNum'>
+                                N
                         </span>
-                        <span
-                            id={`spanPosition`}
-                            key={`spanPosition`}
-                            className='SpanPosition'>
-                            Position
+                            <span
+                                id={`spanPosition`}
+                                key={`spanPosition`}
+                                className='SpanPosition'>
+                                Position
                         </span>
-                        <span
-                            id={`spanEmail`}
-                            key={`spanEmail`}
-                            className='SpanEmail'>
-                            Email
+                            <span
+                                id={`spanEmail`}
+                                key={`spanEmail`}
+                                className='SpanEmail'>
+                                Email
                         </span>
-                        <span
-                            id={`spanName`}
-                            key={`spanName`}
-                            className='SpanName'>
-                            Name
+                            <span
+                                id={`spanName`}
+                                key={`spanName`}
+                                className='SpanName'>
+                                Name
                         </span>
+                        </div>
+                        {this.state.studentsList.map((user, index) => {
+                            let i = index.toString()
+                            return (
+                                <div key={`div${i}`} >
+                                    <input
+                                        type="checkbox"
+                                        name="acheckbox"
+                                        value={`${i}`}
+                                        checked={this.state.studentsList[i].check}
+
+                                        id={`idcheck${i}`}
+                                        key={`check${i}`}
+
+                                        onChange={this.changeCheck}
+                                    />
+                                    <span
+                                        id={`spanNum${i}`}
+                                        key={`spanNum${i}`}
+                                        className='SpanNum'>
+                                        {index + 1}
+                                    </span>
+
+                                    <span
+                                        id={`spanPosition${i}`}
+                                        key={`spanPosition${i}`}
+                                        className='SpanPosition'>
+                                        {user.position}
+                                    </span>
+
+                                    <span
+                                        id={`spanEmail${i}`}
+                                        key={`spanEmail${i}`}
+                                        className='SpanEmail'>
+                                        {user.email}
+                                    </span>
+
+                                    <span
+                                        id={`spanName${i}`}
+                                        key={`spanName${i}`}
+                                        className='SpanName'>
+                                        {user.name}
+                                    </span>
+                                </div>
+                            )
+                        })}
                     </div>
-                    {this.state.studentsList.map((user, index) => {
-                        let i = index.toString()
-                        return (
-                            <div key={`div${i}`} >
-                                <input
-                                    type="checkbox"
-                                    name="acheckbox"
-                                    value={`${i}`}
-                                    checked={this.state.studentsList[i].check}
+                    <div className='CreateStudentFormButt'>
+                        <button
+                            key="ViewMyStudentsForm"
+                            type="button"
+                            onClick={this.clickViewButton}
+                        >View
+                    </button>
+                        <button onClick={this.clickDeletedButton}>Delete</button>
+                        <input
+                            key="CancelUsersForm"
+                            type="button"
+                            value="Cancel"
+                            onClick={this.clickCencelButton}
 
-                                    id={`idcheck${i}`}
-                                    key={`check${i}`}
-
-                                    onChange={this.changeCheck}
-                                />
-                                <span
-                                    id={`spanNum${i}`}
-                                    key={`spanNum${i}`}
-                                    className='SpanNum'>
-                                    {index + 1}
-                                </span>
-
-                                <span
-                                    id={`spanPosition${i}`}
-                                    key={`spanPosition${i}`}
-                                    className='SpanPosition'>
-                                    {user.position}
-                                </span>
-
-                                <span
-                                    id={`spanEmail${i}`}
-                                    key={`spanEmail${i}`}
-                                    className='SpanEmail'>
-                                    {user.email}
-                                </span>
-
-                                <span
-                                    id={`spanName${i}`}
-                                    key={`spanName${i}`}
-                                    className='SpanName'>
-                                    {user.name}
-                                </span>
-                            </div>
-                        )
-                    })}
+                        />
+                    </div>
+                    <p>{this.state.massage}</p>
                 </div>
-                <div className='CreateStudentFormButt'>
-                    <button>Change</button>
-                    <button onClick={this.clickDeletedButton}>Delete</button>
-                    <input
-                        key="CancelUsersForm"
-                        type="button"
-                        value="Cancel"
-                        onClick={this.clickCencelButton}
-
-                    />
-                </div>
-                <p>{this.state.massage}</p>
-            </div>
-        )
+            )
+        }
     }
 }
 
