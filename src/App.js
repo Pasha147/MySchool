@@ -70,7 +70,15 @@ class App extends Component {
               />
 
               <Route path='/student/'
-                render={() => (<Student curUser={this.globalState.curUser} />)}
+                render={() => {
+                  if (this.globalState.curUser.position === 'student') {
+                    return (
+                      <Student curUser={this.globalState.curUser} />
+                    )
+                  } else {
+                    return (<Login changeUser={this.changeUser} />)
+                  }
+                }}
               />
 
               <Route path='/director/'

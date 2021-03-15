@@ -8,12 +8,12 @@
 }
 .CurStudLessons
 {
-    width: 35%;
+    width: 49%;
     border: solid crimson 1px;
 }
 
 .CurStudPayments{
-    width: 63%;
+    width: 49%;
     border: solid crimson 1px;
 }
 
@@ -54,4 +54,19 @@
 }
 .ListOfLessons span{
     margin-left: 15px;
+}
+
+.addDateLesson,
+.addDatePayment{
+width: 40%;
+}
+.LessonRate,
+.addPayment{
+width: 30%;
+}
+
+.CurStudentGoBackButton{
+    margin-left: 40%;
+    margin-right: 40%;
+    width: 10%;
 }

@@ -12,11 +12,13 @@ class CurStudent extends Component {
             lessonsList: [],
             lessonsList1: [],
             payList: [],
+            prp: '',
         }
         if (this.props.selectedStudent.lessons) {
             this.props.selectedStudent.lessons.forEach((lesson) => {
                 this.state.lessonsList1.push({
-                    date: lesson,
+                    date: lesson.date,
+                    rate: lesson.rate,
                     checked: false,
                 })
             })
@@ -32,42 +34,44 @@ class CurStudent extends Component {
                 })
 
             })
-            this.calca = this.calc(this.state.payList)
+           
+            this.calca1 = this.calc1(this.state.payList, this.state.lessonsList1)
         }
 
     }
 
-    calc = (payList) => {
-        let taxes = 300
-        let n = 0
-        let remainder = 0
-        let lessons = 0
+    getPrp = () => {
+
+        let summLess = this.state.lessonsList1.reduce((sum, current) => sum + Number(current.rate), 0)
+        let summPays = this.state.payList.reduce((sum, current) => sum + Number(current.payment), 0)
+        if (summLess - summPays < 0) { return `Переплата ${-(summLess - summPays)}` }
+        if (summLess - summPays > 0) { return `Недоплата ${summLess - summPays}` }
+        if (summLess - summPays === 0) { return `Все занятия оплочены` }
+
+    }
+
+    calc1 = (payList, lessonsList1) => {
         let calc = []
+        let remainder = 0
+        let numLessons = lessonsList1.length
+        let nl = 0
+        let rate = 0
+     
         payList.forEach((payment, index) => {
-            let lessonList = []
-            let curPay = Number(payment.payment) + remainder
-            if (curPay >= taxes) {
-                n = Math.floor(curPay / taxes)
-                remainder = curPay % taxes
-
-            } else {
-                n = 0
-                remainder = curPay
+            let payedLessons = []
+            remainder += Number(payment.payment)
+            for (; nl < numLessons; nl++) {
+                rate = Number(lessonsList1[nl].rate)
+                if (remainder >= rate) {
+                    remainder -= rate
+                    payedLessons.push(nl)
+                } else break
             }
-
-            for (let i = lessons + 1; i <= lessons + n; i++) {
-                lessonList.push(i)
+            calc[index] = {
+                payment: payment.payment,
+                remainder,
+                payedLessons: [...payedLessons]
             }
-
-            lessons += n
-            calc.push({
-                index: index + 1,
-                n: n,
-                remainder: remainder,
-                lessons: lessons,
-                lessonList: [...lessonList]
-            })
-
         })
         return calc
     }
@@ -82,6 +86,7 @@ class CurStudent extends Component {
     };
 
     componentDidMount() {
+        //  console.log(this.calca1)
 
     }
 
@@ -95,14 +100,21 @@ class CurStudent extends Component {
         let newLessons = []
         if (this.props.selectedStudent.lessons) {
             this.state.lessonsList1.forEach(lesson => {
-                newLessons.push(lesson.date)
+                newLessons.push({
+                    date: lesson.date,
+                    rate: lesson.rate
+                })
             })
         }
-        newLessons.push(this.state.addDateLesson)
+        newLessons.push({
+            date: this.state.addDateLesson,
+            rate: this.state.lessonRate,
+        })
 
         let lessonsList1 = [...this.state.lessonsList1]
         lessonsList1.push({
             date: this.state.addDateLesson,
+            rate: this.state.lessonRate,
             checked: false,
         })
 
@@ -115,6 +127,7 @@ class CurStudent extends Component {
             await docRef.update({ lessons: newLessons })
         } catch (error) { alert(error) }
         //------------------------------------------------------------------------------------
+        this.calca1 = this.calc1(this.state.payList, lessonsList1)
 
         this.setState({ lessonsList1 })
     }
@@ -130,14 +143,16 @@ class CurStudent extends Component {
         paymentsList[Number(value)].checked = checked
         this.setState({ payList: paymentsList })
 
-        let payLessons = this.calca[value].lessonList
-        let lessonsList1 = [...this.state.lessonsList1]
-        payLessons.forEach((n) => {
-            if (lessonsList1.length >= n) {
-                lessonsList1[n - 1].checked = checked
-            }
-        })
-        this.setState({ lessonsList1 })
+        let payedLessons = this.calca1[value].payedLessons
+        if (payedLessons.length > 0) {
+            let lessonsList1 = [...this.state.lessonsList1]
+            payedLessons.forEach((n) => {
+                if (lessonsList1.length >= n + 1) {
+                    lessonsList1[n].checked = checked
+                }
+            })
+            this.setState({ lessonsList1 })
+        }
     }
 
     clickDeleteLessonButton = async () => {
@@ -146,7 +161,10 @@ class CurStudent extends Component {
 
         this.state.lessonsList1.forEach((lesson, index) => {
             if (!lesson.checked) {
-                newLessons.push(lesson.date)
+                newLessons.push({
+                    date: lesson.date,
+                    rate: lesson.rate,
+                })
                 lessonsList1.push(lesson)
             }
         })
@@ -161,7 +179,7 @@ class CurStudent extends Component {
             await docRef.update({ lessons: newLessons })
         } catch (error) { alert(error) }
         //------------------------------------------------------------------------------------
-
+        this.calca1 = this.calc1(this.state.payList, lessonsList1)
         this.setState({ lessonsList1 })
     }
 
@@ -178,9 +196,9 @@ class CurStudent extends Component {
         addPay.checked = false
         let newPayList = [...this.state.payList, addPay]
         this.setState({ payList: newPayList })
-        this.calca = this.calc(newPayList)
+        this.calca1 = this.calc1(newPayList, this.state.lessonsList1)
+        
         let studEmail = this.props.selectedStudent.email
-
         //-------------------обновляем список проплат в базе---------------------------
         if (!firebase.apps.length) { firebase.initializeApp(this.firebaseConfig); }
         try {
@@ -206,7 +224,6 @@ class CurStudent extends Component {
         })
 
         let studEmail = this.props.selectedStudent.email
-
         //-------------------обновляем список проплат в базе---------------------------
         if (!firebase.apps.length) { firebase.initializeApp(this.firebaseConfig); }
         try {
@@ -216,7 +233,7 @@ class CurStudent extends Component {
         } catch (error) { alert(error) }
         //------------------------------------------------------------------------------------
 
-        this.calca = this.calc(newPayList)
+        this.calca1 = this.calc1(newPayList, this.state.lessonsList1)
         this.setState({ payList: newPayList })
     }
 
@@ -240,6 +257,9 @@ class CurStudent extends Component {
                             </span>
                             <span key={`lessonDate${Number(index)}`}>
                                 {`${lesson.date}`}
+                            </span>
+                            <span key={`lessonRate${Number(index)}`}>
+                                {`${lesson.rate}`}
                             </span>
 
                         </li>
@@ -286,7 +306,7 @@ class CurStudent extends Component {
     }
 
     render() {
-
+        this.getPrp()
         return (
             <div>
                 <p>{`${this.props.selectedStudent.email}  ${this.props.selectedStudent.name} `}</p>
@@ -294,8 +314,16 @@ class CurStudent extends Component {
                     <div className='CurStudLessons'>
                         <p>Уроки</p>
                         <this.lessonsList />
+                        <hr></hr>
                         <input
+                            className='addDateLesson'
                             id='addDateLesson'
+                            onChange={this.handleChange}
+                        >
+                        </input>
+                        <input
+                            className='LessonRate'
+                            id='lessonRate'
                             onChange={this.handleChange}
                         >
                         </input>
@@ -307,12 +335,15 @@ class CurStudent extends Component {
                         className='CurStudPayments'>
                         <p>Проплаты</p>
                         <this.paymentsList />
+                        <hr></hr>
                         <input
+                            className='addDatePayment'
                             id='addDatePayment'
                             onChange={this.handleChange}
                         >
                         </input>
                         <input
+                            className='addPayment'
                             id='addPayment'
                             onChange={this.handleChange}
                         >
@@ -322,9 +353,12 @@ class CurStudent extends Component {
                     </div>
 
                 </div>
-                <button onClick={this.changeForm}>Go back</button>
-
-
+                <p>{`${this.getPrp()}`}</p>
+                <button
+                className = 'CurStudentGoBackButton'
+                    onClick={this.changeForm}>
+                    Go back
+                    </button>
 
             </div>
         )
